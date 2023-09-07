@@ -7,6 +7,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+install.packages("tidyverse")
+library(tidyverse)
+
 ```
 
 All the following question use the sttst_all_sites.xlsx file in the /data directory.
@@ -18,39 +21,167 @@ triple stars renders a thin line across the page
 ***
 1. Import sttstj_all_sites and inspect the data set.  What is the data structure and the data type of each field?
 
+Data structure is tabular. data types for yr_site and hab are characters and lat and lon are numeric. 
 
 ```{r}
  #this is a code chunk, anything inside the back tics is like being in the R console.
-
+ 
+#data structure is tabular. data types for yr_site and hab are characters and lat and lon are numeric. 
 
 
 ```
 ***
 
-2. How many samples are in the data set?         
+2. How many samples are in the data set?   
+
+2505 samples. 
+
+```{r}
+#2505 samples 
+
+
+```
 
 3. How many unique habitat types are there?  What are the names of each habitat?
 
+There are 6 unique habitat types. PVMT, AGRF, SCR, PTRF, BDRK, HARD.
+
+```{r}
+
+unique(sttstj_all_sites$hab)
+
+#there are 6 unique habitat types. PVMT, AGRF, SCR, PTRF, BDRK, HARD
+
+```
+
 4. How many sites are there in the "PVMT" habitat type?
+
+571 sites. 
+
+```{r}
+pvmtsites <- sttstj_all_sites %>% filter(hab == "PVMT")
+
+#there are 571 sites. 
+
+```
 
 5. How many sites are there in the "PVMT" or "AGRF" habitat types?
 
+There are 1538 sites in the PVMT and AGRF habitats. Individually, there are 571 sites in PVMT and 967 sites in AGRF. 
+
+```{r}
+pvmtagrfsites <- sttstj_all_sites %>% filter(hab == "PVMT" | hab == "AGRF")
+pvmtagrfsites
+pvmtsites <- sttstj_all_sites %>% filter(hab == "PVMT")
+agrfsites <- sttstj_all_sites %>% filter(hab == "AGRF")
+
+#there are 571 sites in PVMT and 967 sites in AGRF.
+#1538 total sites
+
+```
+
 6. How many sites are there in all the habitat types EXCEPT "PVMT"?
 
+1934 sites. 
+
+```{r}
+allbutpvmtsites <- sttstj_all_sites %>% filter(hab != "PVMT")
+
+#1934 sites
+
+```
 7. Show the first 5 records (rows) of...
     - all sites sampled in "AGRF" or "SCR"
     - only show the "yr_site" and "hab" columns
     
 <!-- extra line break -->
+
+yr_site   hab
+
+2001_243	AGRF			
+2001_244	AGRF			
+2001_247	AGRF			
+2001_249	SCR			
+2001_256	AGRF			
+2001_260	AGRF
+
 <br>
+
+```{r}
+agrfscrsites <- sttstj_all_sites %>% filter(hab == "AGRF" | hab == "SCR") %>% select(yr_site, hab)
+
+head(agrfscrsites)
+
+
+
+```
 
 8. What is the northern most site sampled in the "BDRK" habitat?
 
+Site 5450.
+
+```{r}
+bdrksites <- sttstj_all_sites %>% filter(hab == "BDRK") %>% select(yr_site, lat, lon, hab)
+
+View(bdrksites)
+
+max(bdrksites$lat)
+
+latbdrk <- bdrksites %>% arrange(desc(lat))
+
+head(latbdrk)
+
+#18.40479, -65.05035
+
+#2019_5450
+
+```
+
 9. What is the western most site sampled in either "AGRF" or "PTRF" habitat?
+
+Site 9758.
+
+```{r}
+agrfptrf <- sttstj_all_sites %>% filter(hab == "AGRF" | hab == "PTRF") %>% select(yr_site, lat, lon, hab)
+View(agrfptrf)
+
+agrfptrflon <- agrfptrf %>% arrange(lon)
+head(agrfptrflon)
+
+#2015_9758
+
+#18.28121, -65.14093
+
+```
 
 10. How many years were surveyed in the data set?
 
+16 years. 
+
+```{r}
+split <- sttstj_all_sites %>% separate(yr_site, c('year', 'site'))
+View(split)
+
+unique(split$year)
+
+#16 years
+
+```
+
 11. What is the southern most site sample in the "PVMT" habitat in 2004?
 
+Site 1932
+
+```{r}
+pvmtyr <- split %>% filter(year == "2004", hab == "PVMT")
+View(pvmtyr)
+
+pvmtlat <- pvmtyr %>% arrange(lat)
+head(pvmtlat)
+
+#1932
+
+
+```
 
 
